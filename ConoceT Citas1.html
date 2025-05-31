@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Citas - ConoceT</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #3a539b, #8e44ad);
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 3rem auto;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #fff;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #5a75d8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4a64c3;
+    }
+
+    .success {
+      text-align: center;
+      margin-top: 1rem;
+      color: #d4f1ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de Cita - ConoceT</h1>
+    <form id="citaForm">
+      <label for="nombre">Nombre completo:</label>
+      <input type="text" id="nombre" required />
+
+      <label for="fechaNacimiento">Fecha de nacimiento:</label>
+      <input type="date" id="fechaNacimiento" required />
+
+      <label for="telefono">Teléfono (10 dígitos):</label>
+      <input type="tel" id="telefono" pattern="[0-9]{10}" required />
+
+      <label for="correo">Correo electrónico:</label>
+      <input type="email" id="correo" required />
+
+      <label for="fechaCita">Fecha de la cita:</label>
+      <input type="date" id="fechaCita" required />
+
+      <label for="motivo">Motivo de consulta:</label>
+      <textarea id="motivo" rows="4" required></textarea>
+
+      <button type="submit">Registrar Cita</button>
+    </form>
+    <div class="success" id="mensajeExito"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCsfjpMTlsfipYmy0Zn-5Nhcz7LIM1prA",
+      authDomain: "e1459leonors-fdf0f.firebaseapp.com",
+      projectId: "e1459leonors-fdf0f",
+      storageBucket: "e1459leonors-fdf0f.appspot.com",
+      messagingSenderId: "207036295992",
+      appId: "1:207036295992:web:466567e04bd181a0ba6fcd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("citaForm");
+    const mensajeExito = document.getElementById("mensajeExito");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+      const fechaNacimiento = document.getElementById("fechaNacimiento").value;
+      const telefono = document.getElementById("telefono").value;
+      const correo = document.getElementById("correo").value;
+      const fechaCita = document.getElementById("fechaCita").value;
+      const motivo = document.getElementById("motivo").value;
+
+      try {
+        await addDoc(collection(db, "citas"), {
+          nombre,
+          fechaNacimiento,
+          telefono,
+          correo,
+          fechaCita,
+          motivo,
+          timestamp: new Date()
+        });
+
+        mensajeExito.textContent = "✅ ¡Cita registrada con éxito!";
+        form.reset();
+      } catch (error) {
+        console.error("Error al registrar cita:", error);
+        mensajeExito.textContent = "❌ Ocurrió un error. Intente de nuevo.";
+      }
+    });
+  </script>
+</body>
+</html>
